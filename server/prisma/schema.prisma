@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstName String
+  lastName String
+  email String @unique
+  passwordHash String
+
+  reptiles Reptile[]
+  schedules Schedule[]
+}
+
+model Reptile {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  name String
+  species String
+  sex String
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+  feedings Feeding[]
+  husbandryRecords HusbandryRecord[]
+  schedules Schedule[]
+}
+
+model Feeding {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reptileId Int
+  reptile Reptile @relation(fields: [reptileId], references: [id])
+
+  foodItem String
+}
+
+model HusbandryRecord {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  length Float
+  weight Float
+  temperature Float
+  humidity Float
+
+  reptileId Int @unique
+  reptile Reptile @relation(fields: [reptileId], references: [id])
+}
+
+model Schedule {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type String
+  description String
+  monday Boolean
+  tuesday Boolean
+  wednesday Boolean
+  thursday Boolean
+  friday Boolean
+  saturday Boolean
+  sunday Boolean
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+  reptileId Int
+  reptile Reptile @relation(fields: [reptileId], references: [id])
+}
