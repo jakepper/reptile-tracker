@@ -7,6 +7,10 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
 import { usersController } from "./controllers/UserController";
+import { reptilesController } from "./controllers/ReptileController";
+import { feedingsController } from "./controllers/FeedingController";
+import { husbandriesController } from "./controllers/HusbandryController";
+import { schedulessController } from "./controllers/ScheduleController";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +24,6 @@ type LoginBody = {
   email: string,
   password: string
 }
-
 app.post("/sessions", async (req, res) => {
   const { email, password } = req.body as LoginBody;
   const user = await prisma.user.findFirst({
@@ -44,21 +47,60 @@ app.post("/sessions", async (req, res) => {
   }, process.env.ENCRYPTION_KEY!!, {
     expiresIn: '10m'
   });
-  res.json({
-    user,
-    token
-  })
+  
+  res.json({ user, token }).status(200);
 });
 
-// SIGN UP (users/) - GET USER (users/profile) //
-
+// --------------------------------------------------------
+// Routes
+//  - users/        : create user
+//  - users/profile : get logged in users profile
+// --------------------------------------------------------
 usersController(app, prisma);
 
-// START //
+// --------------------------------------------------------
+// Routes
+//  - reptiles/add    : create reptile
+//  - reptiles/remove : delete reptile
+//  - reptiles/modify : update reptile
+//  - reptiles/       : get all reptiles belonging
+//                      to logged in user
+// --------------------------------------------------------
+reptilesController(app, prisma);
+
+// --------------------------------------------------------
+// Routes
+//  - reptiles/feedings/add : create user
+//  - reptiles/feedings/    : get all feedings belonging
+//                            to logged in user
+// --------------------------------------------------------
+feedingsController(app, prisma);
+
+// --------------------------------------------------------
+// Routes
+//  - reptiles/husbandry/add : create husbandry record
+//  - reptiles/husbandry/    : get all husbandry records
+//                             belonging to logged in user
+// --------------------------------------------------------
+husbandriesController(app, prisma);
+
+// --------------------------------------------------------
+// Routes
+//  - schedules/add     : create user
+//  - schedules/user    : get all schedules belonging 
+//                        to logged in user
+//  - schedules/reptile : get all schedules belonging 
+//                        to a specific reptile
+// --------------------------------------------------------
+schedulessController(app, prisma);
+
+// Pages //
 
 app.get("/", (req, res) => {
   res.send(`<h1>Hello, world!</h1>`);
 });
+
+// START //
 
 app.listen(parseInt(process.env.PORT || "3000", 10), () => {
   console.log(`App running on port ${process.env.PORT}`);

@@ -20,7 +20,7 @@ const createHusbandry = (client: PrismaClient): RequestHandler =>
         }
 
         const { reptileId, length, weight, temperature, humidity } = req.body as CreateFeedingBody;
-        const feeding = client.feeding.create({
+        const husbandryRecord = client.husbandryRecord.create({
             data: {
                 reptileId,
                 length,
@@ -30,7 +30,7 @@ const createHusbandry = (client: PrismaClient): RequestHandler =>
             }
         });
 
-        res.json({ feeding }).status(200);
+        res.json({ husbandryRecord }).status(200);
     }
 
 type GetFeedingsBody = {
@@ -45,16 +45,16 @@ const getHusbandries = (client: PrismaClient): RequestHandler =>
         }
 
         const { reptileId } = req.body as GetFeedingsBody;
-        const feedings = client.feeding.findMany({
+        const husbandryRecords = client.husbandryRecord.findMany({
             where: {
                 reptileId
             }
         });
 
-        res.json({ feedings }).status(200);
+        res.json({ husbandryRecords }).status(200);
     }
 
-export const feedingsController = controller(
+export const husbandriesController = controller(
     "reptiles/husbandry",
     [
         { path: "/add", endpointBuilder: createHusbandry, method: "post" },
