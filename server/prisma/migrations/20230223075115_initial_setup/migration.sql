@@ -1,9 +1,14 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "User" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "passwordHash" TEXT NOT NULL
+);
 
-  - A unique constraint covering the columns `[email]` on the table `User` will be added. If there are existing duplicate values, this will fail.
-
-*/
 -- CreateTable
 CREATE TABLE "Reptile" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -13,7 +18,7 @@ CREATE TABLE "Reptile" (
     "species" TEXT NOT NULL,
     "sex" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
-    CONSTRAINT "Reptile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Reptile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -23,7 +28,7 @@ CREATE TABLE "Feeding" (
     "updatedAt" DATETIME NOT NULL,
     "reptileId" INTEGER NOT NULL,
     "foodItem" TEXT NOT NULL,
-    CONSTRAINT "Feeding_reptileId_fkey" FOREIGN KEY ("reptileId") REFERENCES "Reptile" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Feeding_reptileId_fkey" FOREIGN KEY ("reptileId") REFERENCES "Reptile" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -36,7 +41,7 @@ CREATE TABLE "HusbandryRecord" (
     "temperature" REAL NOT NULL,
     "humidity" REAL NOT NULL,
     "reptileId" INTEGER NOT NULL,
-    CONSTRAINT "HusbandryRecord_reptileId_fkey" FOREIGN KEY ("reptileId") REFERENCES "Reptile" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "HusbandryRecord_reptileId_fkey" FOREIGN KEY ("reptileId") REFERENCES "Reptile" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -55,12 +60,9 @@ CREATE TABLE "Schedule" (
     "sunday" BOOLEAN NOT NULL,
     "userId" INTEGER NOT NULL,
     "reptileId" INTEGER NOT NULL,
-    CONSTRAINT "Schedule_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Schedule_reptileId_fkey" FOREIGN KEY ("reptileId") REFERENCES "Reptile" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Schedule_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "Schedule_reptileId_fkey" FOREIGN KEY ("reptileId") REFERENCES "Reptile" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "HusbandryRecord_reptileId_key" ON "HusbandryRecord"("reptileId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");

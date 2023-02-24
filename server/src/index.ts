@@ -12,6 +12,9 @@ import { feedingsController } from "./controllers/FeedingController";
 import { husbandriesController } from "./controllers/HusbandryController";
 import { schedulessController } from "./controllers/ScheduleController";
 
+
+dotenv.config();
+
 const prisma = new PrismaClient();
 
 const app = express();
@@ -42,11 +45,7 @@ app.post("/sessions", async (req, res) => {
     return;
   }
 
-  const token = jwt.sign({
-    userId: user.id
-  }, process.env.ENCRYPTION_KEY!!, {
-    expiresIn: '10m'
-  });
+  const token = jwt.sign({ userId: user.id }, process.env.ENCRYPTION_KEY!!, { expiresIn: '1h' });
   
   res.json({ user, token }).status(200);
 });

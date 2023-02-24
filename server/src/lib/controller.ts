@@ -11,6 +11,7 @@ export type Route = {
 
 export const controller = (name: string, routes: Route[]) => (app: Express, client: PrismaClient) => {
     const router = express.Router();
+    
     routes.forEach(route => {
         if (!route.skipAuth) {
             router.use(route.path, (req, res, next) => {
@@ -22,6 +23,7 @@ export const controller = (name: string, routes: Route[]) => (app: Express, clie
             });
         }
         router[route.method](route.path, route.endpointBuilder(client));
-    })
+    });
+
     app.use(`/${name}`, router);
 }

@@ -45,7 +45,7 @@ const createUser = (client: PrismaClient): RequestHandler =>
         const token = jwt.sign({
             userId: user.id
         }, process.env.ENCRYPTION_KEY!!, {
-            expiresIn: '1m'
+            expiresIn: '10m'
         });
 
         res.json({ user, token });
@@ -55,7 +55,7 @@ const createUser = (client: PrismaClient): RequestHandler =>
 export const usersController = controller(
     "users",
     [
+        { path: "/", endpointBuilder: createUser, method: "post", skipAuth: true },
         { path: "/profile", endpointBuilder: getUserProfile, method: "get" },
-        { path: "/", method: "post", endpointBuilder: createUser, skipAuth: true }
     ]
 )
