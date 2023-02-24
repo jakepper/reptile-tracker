@@ -9,8 +9,7 @@ const getUserProfile = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
         const user = await client.user.findFirst({
@@ -28,7 +27,6 @@ type CreateUserBody = {
     email: string,
     password: string,
 }
-
 const createUser = (client: PrismaClient): RequestHandler =>
     async (req, res) => {
         const { firstName, lastName, email, password } = req.body as CreateUserBody;
@@ -42,15 +40,10 @@ const createUser = (client: PrismaClient): RequestHandler =>
             },
         });
 
-        const token = jwt.sign({
-            userId: user.id
-        }, process.env.ENCRYPTION_KEY!!, {
-            expiresIn: '10m'
-        });
+        const token = jwt.sign({ userId: user.id }, process.env.ENCRYPTION_KEY!!, { expiresIn: '1h' });
 
         res.json({ user, token });
     }
-
 
 export const usersController = controller(
     "users",

@@ -21,13 +21,14 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser())
 
-// AUTHENTICATE //
+// AUTHENTICATION //
 
 type LoginBody = {
   email: string,
   password: string
 }
-app.post("/sessions", async (req, res) => {
+
+app.post("/login", async (req, res) => {
   const { email, password } = req.body as LoginBody;
   const user = await prisma.user.findFirst({
     where: {
@@ -47,7 +48,7 @@ app.post("/sessions", async (req, res) => {
 
   const token = jwt.sign({ userId: user.id }, process.env.ENCRYPTION_KEY!!, { expiresIn: '1h' });
   
-  res.json({ user, token }).status(200);
+  res.json({ user, token });
 });
 
 // --------------------------------------------------------

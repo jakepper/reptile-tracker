@@ -15,12 +15,11 @@ const createHusbandry = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
         const { reptileId, length, weight, temperature, humidity } = req.body as CreateFeedingBody;
-        const husbandryRecord = client.husbandryRecord.create({
+        const husbandryRecord = await client.husbandryRecord.create({
             data: {
                 reptileId,
                 length,
@@ -40,12 +39,11 @@ const getHusbandries = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
         const { reptileId } = req.body as GetFeedingsBody;
-        const husbandryRecords = client.husbandryRecord.findMany({
+        const husbandryRecords = await client.husbandryRecord.findMany({
             where: {
                 reptileId
             }
@@ -55,7 +53,7 @@ const getHusbandries = (client: PrismaClient): RequestHandler =>
     }
 
 export const husbandriesController = controller(
-    "reptiles/husbandry",
+    "reptiles/husbandries",
     [
         { path: "/add", endpointBuilder: createHusbandry, method: "post" },
         { path: "/", endpointBuilder: getHusbandries, method: "get" },

@@ -12,19 +12,18 @@ const createFeeding = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }  
 
         const { reptileId, foodItem } = req.body as CreateFeedingBody;
-        const feeding = client.feeding.create({
+        const feeding = await client.feeding.create({
             data: {
                 reptileId,
                 foodItem
             }
         });
 
-        res.json({ feeding }).status(200);
+        res.json({ feeding });
     }
 
 type GetFeedingsBody = {
@@ -34,22 +33,21 @@ const getFeedings = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
         const { reptileId } = req.body as GetFeedingsBody;
-        const feedings = client.feeding.findMany({
+        const feedings = await client.feeding.findMany({
             where: {
                 reptileId
             }
         });
 
-        res.json({ feedings }).status(200);
+        res.json({ feedings });
     }
 
 export const feedingsController = controller(
-    "reptiles/feeding",
+    "reptiles/feedings",
     [
         { path: "/add", endpointBuilder: createFeeding, method: "post" },
         { path: "/", endpointBuilder: getFeedings, method: "get" },

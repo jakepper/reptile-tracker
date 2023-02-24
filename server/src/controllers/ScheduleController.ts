@@ -3,6 +3,7 @@ import { Express, RequestHandler } from "express";
 import { RequestWithJWTBody } from "../dtos/jwt";
 import { controller } from "../lib/controller";
 
+const TYPES = ["feed", "record", "clean"]
 
 type CreateScheduleBody = {
     reptileId: number
@@ -20,12 +21,15 @@ const createSchedule = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
+
         const { reptileId, type, description, monday, tuesday, wednesday, thursday, friday, saturday, sunday } = req.body as CreateScheduleBody;
-        const husbandryRecord = client.schedule.create({
+
+        if (!TYPES.includes(type)) return res.status(400).json({ message: "Bad Request" });
+        
+        const schedule = await client.schedule.create({
             data: {
                 userId,
                 reptileId,
@@ -41,24 +45,23 @@ const createSchedule = (client: PrismaClient): RequestHandler =>
             }
         });
 
-        res.json({ husbandryRecord }).status(200);
+        res.json({ schedule }).status(200);
     }
 
 const getUsersSchedules = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const husbandryRecords = client.schedule.findMany({
+        const schedules = await client.schedule.findMany({
             where: {
                 userId
             }
         });
 
-        res.json({ husbandryRecords }).status(200);
+        res.json({ schedules }).status(200);
     }
 
 type GetReptilesSchedulesBody = {
@@ -68,25 +71,24 @@ const getReptilesSchedules = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
         const { reptileId } = req.body as GetReptilesSchedulesBody;
-        const husbandryRecords = client.schedule.findMany({
+        const schedules = await client.schedule.findMany({
             where: {
                 reptileId
             }
         });
 
-        res.json({ husbandryRecords }).status(200);
+        res.json({ schedules }).status(200);
     }
 
 export const schedulessController = controller(
-    "schedules/",
+    "schedules",
     [
         { path: "/add", endpointBuilder: createSchedule, method: "post" },
-        { path: "/users", endpointBuilder: getUsersSchedules, method: "get" },
-        { path: "/reptiles", endpointBuilder: getReptilesSchedules, method: "get" },
+        { path: "/user", endpointBuilder: getUsersSchedules, method: "get" },
+        { path: "/reptile", endpointBuilder: getReptilesSchedules, method: "get" },
     ]
 )

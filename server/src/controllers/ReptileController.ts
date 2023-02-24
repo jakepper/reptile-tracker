@@ -14,8 +14,7 @@ const createReptile = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
         if (!validReptile(req.body as ValidReptile)) {
@@ -33,7 +32,7 @@ const createReptile = (client: PrismaClient): RequestHandler =>
             },
         });
 
-        res.json({ reptile }).status(200);
+        res.json({ reptile });
     }
 
 type DeleteReptileBody = {
@@ -43,8 +42,7 @@ const deleteReptile = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
         const { id } = req.body as DeleteReptileBody;
@@ -54,7 +52,7 @@ const deleteReptile = (client: PrismaClient): RequestHandler =>
             }
         });
 
-        res.json({ reptile }).status(200);
+        res.json({ reptile });
     }
 
 type UpdateReptileBody = {
@@ -79,33 +77,32 @@ const updateReptile = (client: PrismaClient): RequestHandler =>
         const { id, name, species, sex } = req.body as UpdateReptileBody;
         const reptile = await client.reptile.update({
             where: {
-                id
+                id,
             },
             data: {
                 name,
                 species,
                 sex
             }
-        })
+        });
 
-        return res.json({ reptile }).status(200);
+        return res.json({ reptile });
     }
 
 const getReptiles = (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
         const userId = req.jwtBody?.userId;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized" });
-            return;
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
         const reptiles = await client.reptile.findMany({
             where: {
-                id: userId
+                userId
             }
         });
 
-        res.json({ reptiles }).status(200);
+        res.json({ reptiles });
     }
 
 type ValidReptile = {
