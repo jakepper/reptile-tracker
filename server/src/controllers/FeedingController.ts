@@ -37,13 +37,19 @@ const getFeedings = (client: PrismaClient): RequestHandler =>
         }
 
         const { reptileId } = req.body as GetFeedingsBody;
-        const feedings = await client.feeding.findMany({
+
+        const reptile = await client.reptile.findFirst({
             where: {
-                reptileId
+                id: reptileId
+            },
+            include: {
+                feedings: true
             }
         });
 
-        res.json({ feedings });
+        if (reptile?.userId != userId) return res.status(401).json({ message: "Unauthorized" });
+
+        res.json({ "feedings": reptile.feedings });
     }
 
 export const feedingsController = controller(

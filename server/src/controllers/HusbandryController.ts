@@ -29,7 +29,7 @@ const createHusbandry = (client: PrismaClient): RequestHandler =>
             }
         });
 
-        res.json({ husbandryRecord }).status(200);
+        res.json({ husbandryRecord });
     }
 
 type GetFeedingsBody = {
@@ -43,13 +43,19 @@ const getHusbandries = (client: PrismaClient): RequestHandler =>
         }
 
         const { reptileId } = req.body as GetFeedingsBody;
-        const husbandryRecords = await client.husbandryRecord.findMany({
-            where: {
-                reptileId
-            }
-        });
 
-        res.json({ husbandryRecords }).status(200);
+        const reptile = await client.reptile.findFirst({
+            where: {
+                id: reptileId
+            },
+            include: {
+                husbandryRecords: true
+            }
+        })
+
+        if (reptile?.userId != userId) return res.status(401).json({ message: "Unauthorized" });
+
+        res.json({ "husbandryRecords": reptile.husbandryRecords });
     }
 
 export const husbandriesController = controller(

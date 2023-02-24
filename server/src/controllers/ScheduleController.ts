@@ -45,7 +45,7 @@ const createSchedule = (client: PrismaClient): RequestHandler =>
             }
         });
 
-        res.json({ schedule }).status(200);
+        res.json({ schedule });
     }
 
 const getUsersSchedules = (client: PrismaClient): RequestHandler =>
@@ -60,8 +60,8 @@ const getUsersSchedules = (client: PrismaClient): RequestHandler =>
                 userId
             }
         });
-
-        res.json({ schedules }).status(200);
+        
+        res.json({ schedules });
     }
 
 type GetReptilesSchedulesBody = {
@@ -75,13 +75,19 @@ const getReptilesSchedules = (client: PrismaClient): RequestHandler =>
         }
 
         const { reptileId } = req.body as GetReptilesSchedulesBody;
-        const schedules = await client.schedule.findMany({
+
+        const reptile = await client.reptile.findFirst({
             where: {
-                reptileId
+                id: reptileId
+            },
+            include: {
+                schedules: true
             }
         });
 
-        res.json({ schedules }).status(200);
+        if (reptile?.userId != userId) return res.status(401).json({ message: "Unauthorized" });
+
+        res.json({ "schedules": reptile.schedules });
     }
 
 export const schedulessController = controller(
